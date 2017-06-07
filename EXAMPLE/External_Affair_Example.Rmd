@@ -1,0 +1,114 @@
+---
+title: "external_affair"
+author: "ShotaYasui"
+date: "2017年6月2日"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## read libraries
+
+```{r cars}
+library(dplyr)
+library(tidyr)
+library(CQR)
+library(quantreg)
+```
+
+## read dataset
+
+```{r pressure, echo=FALSE}
+data <- read.csv(file = "EXAMPLE/data/extramarital_affair.csv")
+```
+
+
+## quantile regression
+```{r}
+qr_result <- rq(data = data,
+                tau = seq(0.5, 0.95, 0.05),
+                method = "fn",
+                formula = affairs ~ rate_marriage + age + 
+                  yrs_married + children + religious + 
+                  educ + occupation + occupation_husb)
+
+plot(qr_result)
+
+```
+
+
+
+## 1st step
+```{r, echo = F}
+
+taus <- seq(0.5, 0.95, 0.05)
+q1 <- 0.1
+cut_value <- 0
+q2 <- 0.09
+
+YV <- "affairs"
+XV <- c("rate_marriage", "age",
+        "yrs_married", "children", "religious",
+        "educ, occupation", "occupation_husb")
+
+cqr_data <- data %>% select(affairs, rate_marriage, age,
+                            yrs_married, children, religious, 
+                            educ, occupation, occupation_husb)
+
+
+
+sq_extra <- cqr_data %>% select_(paste("-",YV, sep = "")) %>% mutate_at(vars(-matches(YV)), pt, n = 2)
+colnames(sq_extra) <- paste("sq_", colnames(sq_extra), sep = "")
+
+cub_extra <- cqr_data %>% select_(paste("-",YV, sep = "")) %>% mutate_at(vars(-matches(YV)), pt, n = 3)
+colnames(cub_extra) <- paste("cub_", colnames(cub_extra), sep = "")
+
+inter <- inter_party(cqr_data %>% select_(paste("-",YV, sep = "")))
+lr_extra <- cbind(cqr_data, sq_extra, cub_extra, inter) %>%
+  mutate(binom_var = ifelse(affairs > 0, 1, 0))
+
+first_logit <- glm(lr_extra, formula = binom_var ~ . - affairs, family = binomial())
+step_logit <- step(first_logit, trace = 0)
+
+```
+
+
+## 2nd and 3rd step
+```{r}
+three_step_result <- two_three_step(first_step_model = step_logit, 
+                                    taus = taus, 
+                                    q1 = q1, 
+                                    q2 = q2, 
+                                    YV = YV, 
+                                    XV = XV, 
+                                    cqr_data = cqr_data)
+```
+
+
+## result plot
+```{r}
+sum_coef <- lapply(three_step_result[[1]],"[[", 3)
+taus <- sapply(three_step_result[[1]],"[[", 6)
+coefficients <- lapply(sum_coef, function(x){x[,1] %>% t() %>% as.data.frame()}) %>% bind_rows
+stder <- lapply(sum_coef, function(x){x[,2] %>% t() %>% as.data.frame()}) %>% bind_rows
+
+coef_df <- data.frame(coefficients, tau = taus) %>% gather(vid, value, -tau)
+stder_df <- data.frame(stder, tau = taus) %>% gather(vid, stder, -tau)
+plot_df <- coef_df %>% inner_join(stder_df, by = c("vid", "tau"))
+
+plot_df %>%
+  ggplot(aes(y = value, x = tau)) +
+  facet_wrap(~vid, scales = "free") +
+  geom_point() + 
+  geom_line() +
+  geom_errorbar(plot_df, 
+                mapping = aes(x = tau, ymin = value - (stder*2), ymax = value + (stder*2)),
+                width = 0.0005, size = 1, color="blue")
+```
+The Above plot is the reproduction of Figure 4. in the original paper.
+Since there was no explanation about delta in the section 3, delta might be differ from the original environment and which may cause the small gap in this result from the original result.
+Also, original paper reported the size of dataset as N = 6388, but the dataset used in here is N = 6366, so that this difference also might the reason of the gap in these results.
+Though, the tendency in the changing of the parameters and their values are similar with the original.
+
