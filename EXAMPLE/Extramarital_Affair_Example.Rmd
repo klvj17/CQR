@@ -2,7 +2,7 @@
 title: "EXTRAMARITAL_AFFAIRS"
 author: "ShotaYasui"
 date: "2017年6月2日"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -21,7 +21,7 @@ library(quantreg)
 ## read dataset
 
 ```{r pressure, echo=FALSE}
-data <- read.csv(file = "C:/Users/A13375/Documents/GitHub/EXAMPLE/data/extramartial_affair.csv")
+data <- read.csv(file = "C:/Users/A13375/Documents/GitHub/CQR/EXAMPLE/data/extramartial_affair.csv")
 ```
 
 
@@ -73,6 +73,12 @@ first_logit <- glm(lr_extra, formula = binom_var ~ . - affairs, family = binomia
 step_logit <- step(first_logit, trace = 0)
 
 ```
+- You need to build your own step 1, since this part is needed to be modify with your data.
+- Basically you need to predict the probability of not censoring with your treatment and control variables.
+- Logit model might be enough here but some other model is also your available option.
+- in this example, X, X^2, X^3 and interaction term within X are used in the logit model then used step AIC variable selection to discard.(This process is not in the original paper, also there was not enough information about this process in there.)
+- the output of 1st step must be the model object.
+
 
 
 ## 2nd and 3rd step
@@ -85,7 +91,21 @@ three_step_result <- two_three_step(first_step_model = step_logit,
                                     XV = XV, 
                                     cqr_data = cqr_data)
 ```
-
+- this part is the 2nd and 3rd step estimation.
+- taus could be something between 0 and 1.
+- q1 is c in the Step 1 of the original paper.
+  - 0.1 works well accoring to their simulation result.
+- q2 is $\delta$ in the Step2 of the original paper.
+  - original paper did not explain about the optimal value in here.
+  - but stata implementation called CQIV hired 0.03 for this value, so it may work.
+- this part produce a list object
+  - [[1]] contains the list of three-step estimator by tau
+    - if you run a model with large dataset, this might be trouble some since model object contin dataset itself.
+  - [[2]] contains the robustness statistics which recommended to check.
+    - J1_rate_total is N(J1)/N(total)
+    - J1_rate_J0 is number of sample in J1 also included in J0 divided in N(J1)
+    - J1_notin_J0 is number of sample in J1 not included in J0
+- One of the advantages in this method is the standard error and confidence intervals produced in the last step Quantile Regression are all valid without any modification.
 
 ## result plot
 ```{r}
@@ -107,8 +127,8 @@ plot_df %>%
                 mapping = aes(x = tau, ymin = value - (stder*2), ymax = value + (stder*2)),
                 width = 0.0005, size = 1, color="blue")
 ```
-The Above plot is the reproduction of Figure 4. in the original paper.
-Since there was no explanation about delta in the section 3, delta might be differ from the original environment and which may cause the small gap in this result from the original result.
-Also, original paper reported the size of dataset as N = 6388, but the dataset used in here is N = 6366, so that this difference also might the reason of the gap in these results.
-Though, the tendency in the changing of the parameters and their values are similar with the original.
+- The Above plot is the reproduction of Figure 4. in the original paper.
+- Since there was no explanation about delta in the section 3, delta might be differ from the original environment and which may cause the small gap in this result from the original result.
+- Also, original paper reported the size of dataset as N = 6388, but the dataset used in here is N = 6366, so that this difference also might the reason of the gap in these results.
+- Though, the tendency in the changing of the parameters and their values are similar with the original.
 

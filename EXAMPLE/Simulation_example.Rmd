@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## read libraries
-```{r cars}
+```{r library, echo = F}
 library(dplyr)
 library(quantreg)
 library(tidyr)
@@ -22,7 +22,7 @@ library(CQR)
 
 ## MonteCarlo Simulation
 ### Set up parameters
-```{r}
+```{r parameter}
 repetitions <- 1000
 N <- 1000
 N_est <- 400
@@ -38,7 +38,7 @@ N_est is the number of observation used in estimation.
 N is number of simulation sample in one repetition. N_est is chosed from N.
 
 ### Simulation and Estimation part
-```{r}
+```{r simulation}
 MS_df <- matrix(nrow = repetitions, ncol = 6)
 robust_stat <- matrix(nrow = repetitions, ncol = 3)
 
@@ -117,7 +117,7 @@ This is because first step is something you need to modify with your dataset.
 
 
 ## comparison of the results
-```{r}
+```{r result}
 
 three_step <- stats_result(df = MS_df[,1:2], param_true = param_true[1:2]) %>% cbind(name = "CQR-three-step")
 
@@ -142,9 +142,10 @@ comp_data %>% cbind(varname = row.names(comp_data)) %>%
 
 ```
 
-As in the original paper, evaluation is taken with rmse, mean_bias, mae_bias and median_bias. Slope is evaluated with first slope coefficient. This evaluation process is what implemented in Buchinsky and Hahn(1998).
-Original-three-step is copied from Table.1 in the original paper.
-Powell-Buchinsky(1994) is the iterated LP estimation explained in Chapter.7 of Mostly Harmless Econometrics.
-three-step is the result that is estimated in the above simulation process.
-The result is not exactly the same with original one, but it is quite close and well performed.
-As a conclusion, my three-step estimator implementation does not have sivere problem.
+- As in the original paper, evaluation is taken with rmse, mean_bias, mae_bias and median_bias. Slope is evaluated with first slope coefficient. 
+- This evaluation process is what implemented in Buchinsky and Hahn(1998).
+- Original-three-step is copied from Table.1 in the original paper.
+- ILPA is the iterated LP estimation which is introduced in Powell-Buchinsky(1994).
+- three-step is the result that is estimated in the above simulation process.
+- The result is not exactly the same with original one, but it is quite close and well performed.
+- As a conclusion, my three-step estimator implementation does not have sivere problem.

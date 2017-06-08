@@ -6,10 +6,6 @@ ShotaYasui
 read libraries
 --------------
 
-``` r
-library(dplyr)
-```
-
     ## 
     ## Attaching package: 'dplyr'
 
@@ -20,10 +16,6 @@ library(dplyr)
     ## The following objects are masked from 'package:base':
     ## 
     ##     intersect, setdiff, setequal, union
-
-``` r
-library(quantreg)
-```
 
     ## Warning: package 'quantreg' was built under R version 3.3.3
 
@@ -38,21 +30,9 @@ library(quantreg)
     ## 
     ##     backsolve
 
-``` r
-library(tidyr)
-```
-
     ## Warning: package 'tidyr' was built under R version 3.3.3
 
-``` r
-library(ggplot2)
-```
-
     ## Warning: package 'ggplot2' was built under R version 3.3.3
-
-``` r
-library(CQR)
-```
 
     ## 
     ## Attaching package: 'CQR'
@@ -187,6 +167,12 @@ comp_data %>% cbind(varname = row.names(comp_data)) %>%
     ## Warning: attributes are not identical across measure variables; they will
     ## be dropped
 
-![](Simulation_example_files/figure-markdown_github/unnamed-chunk-3-1.png)
+![](Simulation_example_files/figure-markdown_github/result-1.png)
 
-As in the original paper, evaluation is taken with rmse, mean\_bias, mae\_bias and median\_bias. Slope is evaluated with first slope coefficient. This evaluation process is what implemented in Buchinsky and Hahn(1998). Original-three-step is copied from Table.1 in the original paper. Powell-Buchinsky(1994) is the iterated LP estimation explained in Chapter.7 of Mostly Harmless Econometrics. three-step is the result that is estimated in the above simulation process. The result is not exactly the same with original one, but it is quite close and well performed. As a conclusion, my three-step estimator implementation does not have sivere problem.
+-   As in the original paper, evaluation is taken with rmse, mean\_bias, mae\_bias and median\_bias. Slope is evaluated with first slope coefficient.
+-   This evaluation process is what implemented in Buchinsky and Hahn(1998).
+-   Original-three-step is copied from Table.1 in the original paper.
+-   ILPA is the iterated LP estimation which is introduced in Powell-Buchinsky(1994).
+-   three-step is the result that is estimated in the above simulation process.
+-   The result is not exactly the same with original one, but it is quite close and well performed.
+-   As a conclusion, my three-step estimator implementation does not have sivere problem.
