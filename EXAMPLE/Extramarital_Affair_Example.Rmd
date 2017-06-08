@@ -1,5 +1,5 @@
 ---
-title: "external_affair"
+title: "EXTRAMARITAL_AFFAIRS"
 author: "ShotaYasui"
 date: "2017年6月2日"
 output: html_document
@@ -21,7 +21,7 @@ library(quantreg)
 ## read dataset
 
 ```{r pressure, echo=FALSE}
-data <- read.csv(file = "EXAMPLE/data/extramarital_affair.csv")
+data <- read.csv(file = "C:/Users/A13375/Documents/GitHub/EXAMPLE/data/extramartial_affair.csv")
 ```
 
 

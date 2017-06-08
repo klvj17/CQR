@@ -1,28 +1,72 @@
----
-title: "Simulation for Table 1."
-author: "ShotaYasui"
-date: "2017年6月2日"
-output: github_document
----
+Simulation for Table 1.
+================
+ShotaYasui
+2017年6月2日
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+read libraries
+--------------
+
+``` r
+library(dplyr)
 ```
 
-## read libraries
-```{r cars}
-library(dplyr)
+    ## 
+    ## Attaching package: 'dplyr'
+
+    ## The following objects are masked from 'package:stats':
+    ## 
+    ##     filter, lag
+
+    ## The following objects are masked from 'package:base':
+    ## 
+    ##     intersect, setdiff, setequal, union
+
+``` r
 library(quantreg)
+```
+
+    ## Warning: package 'quantreg' was built under R version 3.3.3
+
+    ## Loading required package: SparseM
+
+    ## Warning: package 'SparseM' was built under R version 3.3.3
+
+    ## 
+    ## Attaching package: 'SparseM'
+
+    ## The following object is masked from 'package:base':
+    ## 
+    ##     backsolve
+
+``` r
 library(tidyr)
+```
+
+    ## Warning: package 'tidyr' was built under R version 3.3.3
+
+``` r
 library(ggplot2)
+```
+
+    ## Warning: package 'ggplot2' was built under R version 3.3.3
+
+``` r
 library(CQR)
 ```
 
+    ## 
+    ## Attaching package: 'CQR'
 
+    ## The following object is masked from 'package:stats':
+    ## 
+    ##     pt
 
-## MonteCarlo Simulation
+MonteCarlo Simulation
+---------------------
+
 ### Set up parameters
-```{r}
+
+``` r
 repetitions <- 1000
 N <- 1000
 N_est <- 400
@@ -34,11 +78,12 @@ q2 <- 0.03
 
 param_true <- c(1, 1, 0.5, -1, -0.5, 0.25)
 ```
-N_est is the number of observation used in estimation.
-N is number of simulation sample in one repetition. N_est is chosed from N.
+
+N\_est is the number of observation used in estimation. N is number of simulation sample in one repetition. N\_est is chosed from N.
 
 ### Simulation and Estimation part
-```{r}
+
+``` r
 MS_df <- matrix(nrow = repetitions, ncol = 6)
 robust_stat <- matrix(nrow = repetitions, ncol = 3)
 
@@ -109,16 +154,14 @@ three_step_result <- two_three_step(first_step_model = first_logit,
 MS_df[rep, ] <- three_step_result[[1]][[1]]$coefficients[,1]
 
 }
-
 ```
-As you may noticed, first step and second and third step are separated.
-This is because first step is something you need to modify with your dataset.
 
+As you may noticed, first step and second and third step are separated. This is because first step is something you need to modify with your dataset.
 
+comparison of the results
+-------------------------
 
-## comparison of the results
-```{r}
-
+``` r
 three_step <- stats_result(df = MS_df[,1:2], param_true = param_true[1:2]) %>% cbind(name = "CQR-three-step")
 
 intercept <- c(1.05, 0.64, 0.82, 0.66)
@@ -139,12 +182,11 @@ comp_data %>% cbind(varname = row.names(comp_data)) %>%
   facet_grid(varname ~ vid, scales = "free") + 
   geom_hline(yintercept = 0, linetype = 2) +
   xlab("method")
-
 ```
 
-As in the original paper, evaluation is taken with rmse, mean_bias, mae_bias and median_bias. Slope is evaluated with first slope coefficient. This evaluation process is what implemented in Buchinsky and Hahn(1998).
-Original-three-step is copied from Table.1 in the original paper.
-Powell-Buchinsky(1994) is the iterated LP estimation explained in Chapter.7 of Mostly Harmless Econometrics.
-three-step is the result that is estimated in the above simulation process.
-The result is not exactly the same with original one, but it is quite close and well performed.
-As a conclusion, my three-step estimator implementation does not have sivere problem.
+    ## Warning: attributes are not identical across measure variables; they will
+    ## be dropped
+
+![](Simulation_example_files/figure-markdown_github/unnamed-chunk-3-1.png)
+
+As in the original paper, evaluation is taken with rmse, mean\_bias, mae\_bias and median\_bias. Slope is evaluated with first slope coefficient. This evaluation process is what implemented in Buchinsky and Hahn(1998). Original-three-step is copied from Table.1 in the original paper. Powell-Buchinsky(1994) is the iterated LP estimation explained in Chapter.7 of Mostly Harmless Econometrics. three-step is the result that is estimated in the above simulation process. The result is not exactly the same with original one, but it is quite close and well performed. As a conclusion, my three-step estimator implementation does not have sivere problem.
