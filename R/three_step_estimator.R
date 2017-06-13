@@ -1,11 +1,11 @@
-two_three_step <- function(first_step_model, fitst_step_fitted = NA, taus, q1, q2, YV, XV, cqr_data, method = "fn"){
+two_three_step <- function(first_step_model, first_step_fitted = NA, taus, q1, q2, YV, XV, cqr_data, method = "fn"){
 
-  if(is.na(first_step_fitted)){
+  if(is.na(first_step_fitted[1])){
     #get the propensity score
     step_one <- fitted(first_logit)
   }else{
     #get the propensity score
-    step_one <- fitst_step_fitted
+    step_one <- first_step_fitted
   }
 
   #get the q1th quantile point in sample where P(x) > tau
