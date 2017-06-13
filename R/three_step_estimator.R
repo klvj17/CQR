@@ -1,7 +1,13 @@
-two_three_step <- function(first_step_model, taus, q1, q2, YV, XV, cqr_data){
+two_three_step <- function(first_step_model, fitst_step_fitted = NA, taus, q1, q2, YV, XV, cqr_data, method = "fn"){
 
-  #get the propensity score
-  step_one <- fitted(first_logit)
+  if(is.na(first_step_fitted)){
+    #get the propensity score
+    step_one <- fitted(first_logit)
+  }else{
+    #get the propensity score
+    step_one <- fitst_step_fitted
+  }
+
   #get the q1th quantile point in sample where P(x) > tau
   cp_min <- cp_rate_list(taus = taus,
                          step_one = step_one,
@@ -18,7 +24,7 @@ two_three_step <- function(first_step_model, taus, q1, q2, YV, XV, cqr_data){
     step_two_model <- rq(data = cqr_data[J_0_flag, ],
                          formula = paste(YV, "~ ."),
                          tau = taus[i],
-                         method = "fn")
+                         method = method)
     pred_value <- predict(step_two_model, cqr_data)
 
     #3rd step
@@ -37,7 +43,7 @@ two_three_step <- function(first_step_model, taus, q1, q2, YV, XV, cqr_data){
     model_result <- rq(data = cqr_data[J_1_flag,],
                        formula = paste(YV, "~ ."),
                        tau = taus[i],
-                       method = "fn"
+                       method = method
                        )
 
     #output

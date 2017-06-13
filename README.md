@@ -1,5 +1,5 @@
 # CQR
-This is the R implementation of Three-Step Censored Quantile Regression that is explained in Chernozhukov and Han(2002).
+This is the R implementation of Three-Step Censored Quantile Regression that is introduced in [Chernozhukov and Han(2002)](http://www.mit.edu/~vchern/papers/Chernozhukov%20and%20Hong%20(JASA%202002)%20Three%20Step%20Censored%20Quantile%20Regression.pdf).
 
 
 # CQR package
@@ -7,11 +7,12 @@ This is the R implementation of Three-Step Censored Quantile Regression that is 
 ## about this package
 
 CQR is developed to analyze the Quantile Treatment Effect with censored data.
-This package is based on the Three-step Censored Quantile Regression which is introduced in [Chernozhukov and Han(2002)](http://www.mit.edu/~vchern/papers/Chernozhukov%20and%20Hong%20(JASA%202002)%20Three%20Step%20Censored%20Quantile%20Regression.pdf).
+This package is based on the [quantreg](https://cran.r-project.org/web/packages/quantreg/index.html) package.
 
 
 The original idea is introduced in Chernozhukov and Han(2002).
 This package is still in developing, though you are able to reproduce the table 1 and Figure 1 in the above paper some degree.
+
 
 ## install
 
